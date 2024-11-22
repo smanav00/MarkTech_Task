@@ -9,8 +9,7 @@ const createPost = async (req, res) => {
   }
 };
 
-// GET /posts: List all posts with pagination
-router.get("/", async (req, res) => {
+const getPosts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -31,6 +30,6 @@ router.get("/", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Error fetching posts" });
   }
-});
+};
 
 module.exports = { createPost, getPosts };
