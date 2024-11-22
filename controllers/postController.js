@@ -9,12 +9,28 @@ const createPost = async (req, res) => {
   }
 };
 
-const getPosts = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
-  const posts = await Post.find()
-    .skip((page - 1) * limit)
-    .limit(parseInt(limit));
-  res.json(posts);
-};
+// GET /posts: List all posts with pagination
+router.get("/", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalPosts = await Post.countDocuments();
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      totalPosts,
+      currentPage: page,
+      totalPages: Math.ceil(totalPosts / limit),
+      posts,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching posts" });
+  }
+});
 
 module.exports = { createPost, getPosts };
